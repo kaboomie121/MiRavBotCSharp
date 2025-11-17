@@ -2,6 +2,13 @@
 
 public class Structs
 {
+    public struct NoticeListStruct
+    {
+        public string Name { get; set; }
+
+        public Enums.NoticeListConditions Condition { get; set; }
+    }
+
     public struct TokenFile
     {
         public string user { get; set; }

@@ -1,7 +1,28 @@
-﻿namespace MiravBotProject.Domain;
+﻿using NetCord;
+using NetCord.Rest;
+using NetCord.Services.ApplicationCommands;
+using System.Text.Json;
+
+namespace MiravBotProject.Domain;
 
 public class Methods
 {
+    #region File Accessing
+
+    public static async Task<Structs.TokenFile> GetTokenFileAsync()
+    {
+        string tokenDataFromFile = await File.ReadAllTextAsync("./token.json");
+        return JsonSerializer.Deserialize<Structs.TokenFile>(tokenDataFromFile);
+    }
+
+    public static async Task<Structs.BotConfig> GetBotConfigAsync()
+    {
+        string configDataFromFile = await File.ReadAllTextAsync("./config.json");
+        return JsonSerializer.Deserialize<Structs.BotConfig>(configDataFromFile);
+    }
+
+    #endregion
+
     private static readonly HttpClient client = new HttpClient();
     public static async Task<List<Dictionary<int, string>>> GetSquadronPlayers()
     {
@@ -77,5 +98,42 @@ public class Methods
             }
         }
         return personList;
+    }
+
+    public static int FindFirstIndex(string givenString, char findChar)
+    {
+        foreach (char c in givenString)
+        {
+            if(c == findChar)
+                return (int)c;
+        }
+        return -1;
+    }
+
+    public static async Task<List<Structs.NoticeListStruct>> GetNoticeList(Structs.TokenFile tFD, Structs.BotConfig bCD, ApplicationCommandContext Context)
+    {
+        if (tFD.devMode)
+        {
+            //await Context.Channel.SendMessageAsync("Test"); (testing how the bot send a message to a channel)
+            return new();
+        }
+        
+        var returnList = new List<Structs.NoticeListStruct>();
+
+        Context.Guild.Channels.TryGetValue(bCD.noticeListChannelId, out var NoticeListChannel);
+
+        if(NoticeListChannel is TextChannel textChannel)
+        {
+            var messages = textChannel.GetMessagesAsync(new() { BatchSize = 123 });
+        }
+
+        
+
+        return returnList;
+    }
+
+    public static async Task GetSquadronKickable(Structs.BotConfig botConfigFileData)
+    {
+
     }
 }

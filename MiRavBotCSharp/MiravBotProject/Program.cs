@@ -8,11 +8,7 @@ internal class Program
 {
     static async Task Main(string[] args)
     {
-        string tokenDataFromFile = await File.ReadAllTextAsync("./token.json");
-        Structs.TokenFile dataTokenFile = JsonSerializer.Deserialize<Structs.TokenFile>(tokenDataFromFile);
-
-        string configDataFromFile = await File.ReadAllTextAsync("./config.json");
-        Structs.BotConfig dataBotConfig = JsonSerializer.Deserialize<Structs.BotConfig>(configDataFromFile);
+        var dataTokenFile = await Methods.GetTokenFileAsync();
 
         Console.WriteLine($"User: {dataTokenFile.user}");
         Console.WriteLine($"Dev mode: {dataTokenFile.devMode}");
@@ -20,7 +16,7 @@ internal class Program
         MiravBot bot = new MiravBot();
         try
         {
-            await bot.Start(args, dataTokenFile, dataBotConfig);
+            await bot.Start(args);
 
         }
         catch (Exception ex)

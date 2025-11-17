@@ -8,15 +8,20 @@ using NetCord.Hosting.Services.ApplicationCommands;
 using Microsoft.Extensions.Hosting;
 using MiravBotProject.Domain;
 using NetCord.Hosting.Rest;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace MiravBotProject.CUI
 {
     public class MiravBot
     {
-        public async Task Start(string[] args, Structs.TokenFile tokenFileData, Structs.BotConfig botConfigData)
+        public async Task Start(string[] args)
         {
+            DateTime start = DateTime.Now;
             Console.WriteLine("MiravBot is starting...");
             var builder = Host.CreateApplicationBuilder(args);
+
+            var tokenFileData = await Methods.GetTokenFileAsync();
 
             builder.Services.AddDiscordGateway(options =>
             {
@@ -40,7 +45,13 @@ namespace MiravBotProject.CUI
 
             host.AddModules(typeof(Program).Assembly);
 
+            var logger = host.Services.GetRequiredService<ILogger<Program>>();
+
+            logger.LogCritical("Test of the logger");
+
             await host.RunAsync();
+            TimeSpan timeSpan = DateTime.Now - start;
+            logger.LogInformation($"Bot started up in {timeSpan.TotalMilliseconds} ms.");
         }
     }
 }
